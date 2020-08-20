@@ -6,6 +6,7 @@ import shlex
 import subprocess
 import sys
 import time
+from urllib import parse
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,7 +39,7 @@ def main():
     token = sys.argv[1]
     while True:
         LOGGER.info('Looping at %s', datetime.datetime.now())
-        for pet in get_pets() + get_pets2():
+        for pet in get_pets() + get_pets2() + get_pets3():
             if has_seen(pet):
                 LOGGER.info('Already seen %s', pet)
             else:
@@ -56,8 +57,6 @@ def has_seen(pet):
 
 def mark_seen(pet):
     subprocess.check_call(['touch', pet.file_name], cwd=DIRECTORY)
-
-
 
 def get_pets():
     LOGGER.info('Querying for all pets')
@@ -122,6 +121,29 @@ def get_pet2(pet_id):
     response = requests.get('https://www.ilovefamilydog.org/dog-details/?id={}'.format(pet_id))
     soup = BeautifulSoup(response.text, features="html.parser")
     return soup('p')[-1].text
+
+
+def get_pets3():
+    response = requests.get('https://www.shelterluv.com/available_pets/11413')
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, features="html.parser")
+    rows = soup('a')
+    return [
+        Pet(
+            image=row('img')[0]['src'],
+            name=row.text.strip(),
+            pet_id=os.path.split(parse.urlparse(row['href']).path)[1],
+            body_func=get_pet3,
+        )
+        for row in rows
+    ]
+
+
+def get_pet3(pet_id):
+    response = requests.get('https://www.shelterluv.com/publish_animal/{}'.format(pet_id))
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, features="html.parser")
+    return soup('p').text
 
 
 def pager_duty(pet, token):
