@@ -124,7 +124,7 @@ def get_pet2(pet_id):
 
 
 def get_pets3():
-    response = requests.get('https://www.shelterluv.com/available_pets/11413')
+    response = requests.get('https://www.shelterluv.com/available_pets/11413?saved_query=7503&embedded=1&iframeId=shelterluv_embed_114131597715231779&columns=2#https%3A%2F%2Fwww.milofoundation.org%2Fdogs-for-adoption%2F%23sl_embed%26page%3Dshelterluv_embed_114131597715231779%25252Favailable_pets%25252F11413%25253Fsaved_query%25253D7503')
     response.raise_for_status()
     soup = BeautifulSoup(response.text, features="html.parser")
     rows = soup('a')
@@ -143,7 +143,7 @@ def get_pet3(pet_id):
     response = requests.get('https://www.shelterluv.com/publish_animal/{}'.format(pet_id))
     response.raise_for_status()
     soup = BeautifulSoup(response.text, features="html.parser")
-    return soup('p').text
+    return soup('p')[0].text
 
 
 def pager_duty(pet, token):
