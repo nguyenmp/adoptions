@@ -108,13 +108,14 @@ def get_pets2(page=1):
     result = []
     for row in data:
         pet_id = row['animalID']
-        Pet(
+        pet = Pet(
             image=row['animalPictures'][0]['large']['url'],
             name=row['animalName'],
             pet_id=pet_id,
             url='https://www.ilovefamilydog.org/dog-details/?id={}'.format(pet_id),
             shelter=shelter,
         )
+        result.append(pet)
 
     result.extend(rest)
     return result
