@@ -23,6 +23,7 @@ class Pet(object):
         self.pet_id = pet_id
         self.url = url
         self.shelter = shelter
+        self.file_name = '{}_{}'.format(name, pet_id)
 
     def __str__(self):
         return self.__repr__()
